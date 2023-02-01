@@ -433,13 +433,13 @@ fn bls12381_sample_signature() {
 fn bls12381_sample_signature_verifies() {
     let pk = PublicKey::try_from(
         hex::decode(
-            "94209a296b739577cb076d3bfb1ca8ee936f29b69b7dae436118c4dd1cc26fd43dcd16249476a006b8b949bf022a7858"
+            "9033aae2c5689e478364792e492d313c3a098a5a1f46d1d0a539539c20efca5fbd71cc5bba99bc030d42ff55142a5902"
         ).unwrap().as_slice()
     ).unwrap();
 
     let sig = bls12381::Signature::try_from(
         hex::decode(
-            "b01ce4632e94d8c611736e96aa2ad8e0528a02f927a81a92db8047b002a8c71dc2d6bfb94729d0973790c10b6ece446817e4b7543afd7ca9a17c75de301ae835d66231c26a003f11ae26802b98d90869a9e73788c38739f7ac9d52659e1f7cf7"
+            "8b6827e2c0874117fb5b24d8b08dc391158f6271a1932419306bf5b3e44bcecf2aa44cad6986fd2a0f7c69ae04e97b8f11f490cf0594dda038de1231cf3c62a1b6e0c6043cb45d04d4e1db23a50fa20662ac84aac526a8f4739edc65252603bd"
         ).unwrap().as_slice()
     ).unwrap();
 
