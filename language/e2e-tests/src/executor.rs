@@ -492,7 +492,8 @@ impl FakeExecutor {
 
         let validator_set = ValidatorSet::fetch_config(&self.data_store.as_move_resolver())
             .expect("Unable to retrieve the validator set from storage");
-        let proposer = *validator_set.payload().next().unwrap().account_address();
+        let proposer = *validator_set.payload().next()
+	    .expect("Unable to retrieve a proposer from the validator set").account_address();
         // when updating time, proposer cannot be ZERO.
         self.new_block_with_metadata(proposer, vec![])
     }
