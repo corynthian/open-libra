@@ -3,9 +3,18 @@ resolver = "2"
 
 members = [
     "types",
+    "config/protocol-constants",
     "crates/ol-bitvec",
     "crates/ol-crypto",
     "crates/ol-crypto-derive",
+    "crates/ol-infallible",
+    "crates/ol-log-derive",
+    "crates/ol-logger",
+    "language/ol-aggregator",
+    "language/block-executor",
+    "language/framework",
+    "language/transaction-builder",
+    "storage/state-view",
 ]
 
 exclude = []
@@ -16,7 +25,8 @@ exclude = []
 #
 # For more, see the "Conditional compilation for tests" section in documentation/coding_guidelines.md.
 default-members = [
-    "types"
+    "types",
+    "language/framework",
 ]
 
 # All workspace members should inherit these keys
@@ -33,10 +43,30 @@ rust-version = "1.64"
 [workspace.dependencies]
 # Internal crate dependencies.
 # Please do not add any test features here: they should be declared by the individual crate.
-ol-types = { path = "types" }
+ol-protocol-constants = { path = "config/protocol-constants" }
+
+
+ol-infallible = { path = "crates/ol-infallible" }
+ol-log-derive = { path = "crates/ol-log-derive" }
+ol-logger = { path = "crates/ol-logger" }
 ol-bitvec = { path = "crates/ol-bitvec" }
 ol-crypto = { path = "crates/ol-crypto" }
 ol-crypto-derive = { path = "crates/ol-crypto-derive" }
+ol-metrics-core = { path = "crates/ol-metrics-core" }
+
+ol-aggregator = { path = "language/ol-aggregator" }
+ol-block-executor = { path = "language/block-executor" }
+ol-cached-packages = { path = "language/framework/cached-packages" }
+ol-gas-algebra-ext = { path = "language/ol-gas-algebra-ext" }
+ol-gas = { path = "language/ol-gas" }
+ol-move-hashmap = { path = "language/move-hashmap" }
+ol-framework = { path = "language/framework" }
+ol-package-builder = { path = "language/package-builder" }
+ol-transaction-builder = { path = "language/transaction-builder" }
+ol-vm = { path = "language/ol-vm" }
+ol-state-view = { path = "storage/state-view" }
+
+ol-types = { path = "types" }
 
 # External crate dependencies.
 # Please do not add any test features here: they should be declared by the individual crate.

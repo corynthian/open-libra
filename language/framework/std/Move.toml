@@ -1,0 +1,8 @@
+[package]
+name = "Stdlib"
+version = "1.0.0"
+
+[addresses]
+std = "0x1"
+# ol_framework = "0x1"
+# Extensions = "0x1" # For Prover to instantiate `{{Ext}}` in prelude.

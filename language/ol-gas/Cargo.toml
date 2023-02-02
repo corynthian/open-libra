@@ -1,0 +1,39 @@
+[package]
+name = "ol-gas"
+description = "Gas metering for the 0L blockchain"
+version = "0.1.0"
+
+# Workspace inherited keys
+authors = { workspace = true }
+edition = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
+
+[dependencies]
+anyhow = { workspace = true }
+ol-framework = { workspace = true }
+ol-gas-algebra-ext = { workspace = true }
+ol-protocol-constants = { workspace = true }
+ol-package-builder = { workspace = true }
+ol-types = { workspace = true }
+bcs = { workspace = true }
+clap = { workspace = true }
+move-binary-format = { workspace = true }
+move-core-types = { workspace = true }
+move-model = { workspace = true }
+move-stdlib = { workspace = true }
+move-table-extension = { workspace = true }
+move-vm-types = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[features]
+testing = ["move-stdlib/testing", "ol-protocol-constants/testing"]
+
+[[bin]]
+name = "ol-gas-gen-update-proposal"
+path = "src/bin/gen_proposal.rs"
