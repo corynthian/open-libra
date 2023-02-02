@@ -360,11 +360,11 @@ Signal validators to start using new configuration. Must be called from friend c
     // Reconfiguration "forces the <a href="block.md#0x1_block">block</a>" <b>to</b> end, <b>as</b> mentioned above. Therefore, we must process
 	// the collected fees explicitly so that staking can distribute them.
     //
-    // This also handles the case when a validator is removed due <b>to</b> the governance proposal. In
-	// particular, removing the validator causes a <a href="reconfiguration.md#0x1_reconfiguration">reconfiguration</a>. We explicitly process fees,
+    // This also handles the case when a <a href="validator.md#0x1_validator">validator</a> is removed due <b>to</b> the governance proposal. In
+	// particular, removing the <a href="validator.md#0x1_validator">validator</a> causes a <a href="reconfiguration.md#0x1_reconfiguration">reconfiguration</a>. We explicitly process fees,
 	// i.e. we drain aggregatable <a href="coin.md#0x1_coin">coin</a> and populate the fees <a href="../../std/doc/table.md#0x1_table">table</a>, prior <b>to</b> calling
 	// `on_new_epoch()`. That call, in turn, distributes transaction fees for all active and
-	// pending_inactive validators, which <b>include</b> <a href="../../std/doc/any.md#0x1_any">any</a> validator that is <b>to</b> be removed.
+	// pending_inactive validators, which <b>include</b> <a href="../../std/doc/any.md#0x1_any">any</a> <a href="validator.md#0x1_validator">validator</a> that is <b>to</b> be removed.
     <b>if</b> (<a href="../../std/doc/features.md#0x1_features_collect_and_distribute_gas_fees">features::collect_and_distribute_gas_fees</a>()) {
         // All transactions after <a href="reconfiguration.md#0x1_reconfiguration">reconfiguration</a> are Retry. Therefore, when the next
         // <a href="block.md#0x1_block">block</a> starts and tries <b>to</b> assign/burn collected fees it will be just 0 and
@@ -373,7 +373,7 @@ Signal validators to start using new configuration. Must be called from friend c
     };
 
 	// 0L-TODO: New epoch <a href="reconfiguration.md#0x1_reconfiguration">reconfiguration</a>.
-    // Compute the new validator set and distribute rewards (and maybe) transaction fees.
+    // Compute the new <a href="validator.md#0x1_validator">validator</a> set and distribute rewards (and maybe) transaction fees.
     // _::on_new_epoch();
 
     <a href="storage_gas.md#0x1_storage_gas_on_reconfig">storage_gas::on_reconfig</a>();

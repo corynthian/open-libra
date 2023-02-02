@@ -7,7 +7,7 @@ module open_libra::genesis {
     use open_libra::account;
     use open_libra::aggregator_factory;
     use open_libra::ol_coin::{Self, OLCoin};
-    // use open_libra::ol_governance;
+    // use open_libra::governance;
     use open_libra::block;
     use open_libra::chain_id;
     use open_libra::chain_status;
@@ -16,7 +16,7 @@ module open_libra::genesis {
     use open_libra::create_signer::create_signer;
     use open_libra::gas_schedule;
     use open_libra::reconfiguration;
-    // use open_libra::stake;
+    use open_libra::validator;
     // use open_libra::staking_contract;
     // use open_libra::staking_config;
     use open_libra::state_storage;
@@ -35,19 +35,17 @@ module open_libra::genesis {
         balance: u64,
     }
 
-    struct EmployeeAccountMap has copy, drop {
-        accounts: vector<address>,
-        validator: ValidatorConfigurationWithCommission,
-        vesting_schedule_numerator: vector<u64>,
-        vesting_schedule_denominator: u64,
-        beneficiary_resetter: address,
+    /// Map containing accounts which existed pre-genesis.
+    struct ExistingAccountMap has copy, drop {
+	accounts: vector<address>,
+	allocations: vector<u64>,
     }
 
     struct ValidatorConfiguration has copy, drop {
         owner_address: address,
         operator_address: address,
         voter_address: address,
-        stake_amount: u64,
+        initial_allocation: u64,
         consensus_pubkey: vector<u8>,
         proof_of_possession: vector<u8>,
         network_addresses: vector<u8>,
@@ -67,16 +65,16 @@ module open_libra::genesis {
         initial_version: u64,
         consensus_config: vector<u8>,
         epoch_interval_microsecs: u64,
-        _minimum_stake: u64,
-        _maximum_stake: u64,
+	_vdf_difficulty: u64,
+	_vdf_threshold: u64,
         _recurring_lockup_duration_secs: u64,
         _allow_validator_set_change: bool,
         _rewards_rate: u64,
         _rewards_rate_denominator: u64,
         _voting_power_increase_limit: u64,
     ) {
-        // Initialize the ol framework account. This is the account where system resources and modules will be
-        // deployed to. This will be entirely managed by on-chain governance and no entities have the key or privileges
+        // Initialize the open libra account. This is the account where system resources and modules
+	// will be deployed to. This will be entirely managed by on-chain governance and no entities have the key or privileges
         // to use this account.
         let (open_libra, _ol_signer_cap) = account::create_framework_reserved_account(@open_libra);
         // Initialize account configs on ol framework account.
@@ -93,23 +91,24 @@ module open_libra::genesis {
         // Give the decentralized on-chain governance control over the core framework account.
         // governance::store_signer_cap(&open_libra, @open_libra, open_libra_signer_cap);
 
-        // put reserved framework reserved accounts under ol governance
-        // let framework_reserved_addresses = vector<address>[@0x2, @0x3, @0x4, @0x5, @0x6, @0x7, @0x8, @0x9, @0xa];
-        // while (!vector::is_empty(&framework_reserved_addresses)) {
-        //     let address = vector::pop_back<address>(&mut framework_reserved_addresses);
-        //     let (open_libra, framework_signer_cap) = account::create_framework_reserved_account(address);
-        //     governance::store_signer_cap(&open_libra, address, framework_signer_cap);
+        // Give governance control over the reserved addresses.
+        // let reserved_addresses = vector<address>[@0x2, @0x3, @0x4, @0x5, @0x6, @0x7, @0x8, @0x9, @0xa];
+        // while (!vector::is_empty(&reserved_addresses)) {
+        //     let address = vector::pop_back<address>(&mut reserved_addresses);
+        //     let (open_libra, reserved_signer_cap) = account::create_reserved_account(address);
+        //     governance::store_signer_cap(&open_libra, address, reserved_signer_cap);
         // };
 
         consensus_config::initialize(&open_libra, consensus_config);
         version::initialize(&open_libra, initial_version);
 
+        validator::initialize(&open_libra);
+
 	// 0L-TODO
-        // stake::initialize(&open_libra);
-        // staking_config::initialize(
+        // tower_config::initialize(
         //     &open_libra,
-        //     minimum_stake,
-        //     maximum_stake,
+        //     vdf_difficulty,
+        //     vdf_threshold,
         //     recurring_lockup_duration_secs,
         //     allow_validator_set_change,
         //     rewards_rate,
@@ -132,14 +131,13 @@ module open_libra::genesis {
     }
 
     // Genesis step 2: Initialize OL coin.
-    // fun initialize_ol_coin(open_libra: &signer) {
-    //     let (burn_cap, _mint_cap) = ol_coin::initialize(open_libra);
-    // 	// 0L-TODO
-    //     // Give stake module MintCapability<OLCoin> so it can mint rewards.
-    //     // stake::store_ol_coin_mint_cap(open_libra, mint_cap);
-    //     // Give transaction_fee module BurnCapability<OLCoin> so it can burn gas.
-    //     transaction_fee::store_ol_coin_burn_cap(open_libra, burn_cap);
-    // }
+    fun initialize_ol_coin(open_libra: &signer) {
+        let (burn_cap, mint_cap) = ol_coin::initialize(open_libra);
+        // Give the `validator` module MintCapability<OLCoin> so it can mint rewards.
+        validator::store_ol_coin_mint_cap(open_libra, mint_cap);
+        // Give transaction_fee module BurnCapability<OLCoin> so it can burn gas.
+        transaction_fee::store_ol_coin_burn_cap(open_libra, burn_cap);
+    }
 
     /// Only called for testnets and e2e tests.
     fun initialize_core_resources_and_ol_coin(
@@ -147,9 +145,8 @@ module open_libra::genesis {
         core_resources_auth_key: vector<u8>,
     ) {
         let (burn_cap, mint_cap) = ol_coin::initialize(open_libra);
-	// 0L-TODO
-        // Give stake module MintCapability<OLCoin> so it can mint rewards.
-        // stake::store_ol_coin_mint_cap(open_libra, mint_cap);
+        // Give `validator` module MintCapability<OLCoin> so it can mint rewards.
+        validator::store_ol_coin_mint_cap(open_libra, mint_cap);
         // Give transaction_fee module BurnCapability<OLCoin> so it can burn gas.
         transaction_fee::store_ol_coin_burn_cap(open_libra, burn_cap);
 
@@ -193,6 +190,9 @@ module open_libra::genesis {
             account
         }
     }
+
+    // Re-creates the allocations from a prior set.
+    // fun allocate_preexisting_accounts() { }
 
     // 0L-TODO
     // fun create_employee_validators(
@@ -287,24 +287,22 @@ module open_libra::genesis {
 
     fun create_initialize_validators_with_commission(
         open_libra: &signer,
-        use_staking_contract: bool,
         validators: vector<ValidatorConfigurationWithCommission>,
     ) {
         let i = 0;
         let num_validators = vector::length(&validators);
         while (i < num_validators) {
             let validator = vector::borrow(&validators, i);
-            create_initialize_validator(open_libra, validator, use_staking_contract);
-
+            create_initialize_validator(open_libra, validator);
             i = i + 1;
         };
 
-        // Destroy the ol framework account's ability to mint coins now that we're done with setting up the initial
+        // Destroy open libras ability to mint coins now that we're done with setting up the initial
         // validators.
         ol_coin::destroy_mint_cap(open_libra);
 
-	// 0L-TODO
-        // stake::on_new_epoch();
+	// 0L-TODO: Transition to the next epoch
+        // validator::on_new_epoch();
     }
 
     /// Sets up the initial validator set for the network.
@@ -334,17 +332,16 @@ module open_libra::genesis {
             i = i + 1;
         };
 
-        create_initialize_validators_with_commission(open_libra, false, validators_with_commission);
+        create_initialize_validators_with_commission(open_libra, validators_with_commission);
     }
 
     fun create_initialize_validator(
         open_libra: &signer,
         commission_config: &ValidatorConfigurationWithCommission,
-        _use_staking_contract: bool,
     ) {
         let validator = &commission_config.validator_config;
 
-        let _owner = &create_account(open_libra, validator.owner_address, validator.stake_amount);
+        let _owner = &create_account(open_libra, validator.owner_address, validator.initial_allocation);
         create_account(open_libra, validator.operator_address, 0);
         create_account(open_libra, validator.voter_address, 0);
 
@@ -421,9 +418,9 @@ module open_libra::genesis {
         _required_proposer_stake: u64,
         _voting_duration_secs: u64,
         accounts: vector<AccountMap>,
-        _employee_vesting_start: u64,
-        _employee_vesting_period_duration: u64,
-        _employees: vector<EmployeeAccountMap>,
+        // _employee_vesting_start: u64,
+        // _employee_vesting_period_duration: u64,
+        // _employees: vector<EmployeeAccountMap>,
         validators: vector<ValidatorConfigurationWithCommission>
     ) {
         initialize(
@@ -441,7 +438,7 @@ module open_libra::genesis {
             voting_power_increase_limit
         );
         features::change_feature_flags(open_libra, vector[1, 2], vector[]);
-        // initialize_ol_coin(open_libra);
+        initialize_ol_coin(open_libra);
         // governance::initialize_for_verification(
         //     open_libra,
         //     min_voting_threshold,
@@ -450,7 +447,7 @@ module open_libra::genesis {
         // );
         create_accounts(open_libra, accounts);
         // create_employee_validators(employee_vesting_start, employee_vesting_period_duration, employees);
-        create_initialize_validators_with_commission(open_libra, true, validators);
+        create_initialize_validators_with_commission(open_libra, validators);
         set_genesis_end(open_libra);
     }
 

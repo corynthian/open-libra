@@ -2,6 +2,7 @@
 module open_libra::transaction_fee {
     use open_libra::coin::{Self, AggregatableCoin, BurnCapability, Coin};
     use open_libra::ol_coin::OLCoin;
+    use open_libra::validator;
     use open_libra::system_addresses;
     use std::error;
     use std::option::{Self, Option};
@@ -145,8 +146,8 @@ module open_libra::transaction_fee {
             };
 
             burn_coin_fraction(&mut coin, collected_fees.burn_percentage);
-	    // 0L-TODO: Commented out `add_transaction_fee(proposer, coin)`
-            // stake::add_transaction_fee(proposer, coin);
+	    // 0L-TODO: Investigate fees
+            validator::add_transaction_fee(proposer, coin);
             return
         };
 

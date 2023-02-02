@@ -69,9 +69,8 @@ module open_libra::coin {
 
     /// Core data structures
 
-    // 0L-TODO: IMPORTANT! `drop` was added here for compile, this must be removed
     /// Main structure representing a coin/token in an account's custody.
-    struct Coin<phantom CoinType> has store, drop {
+    struct Coin<phantom CoinType> has store {
         /// Amount of coin this address has.
         value: u64,
     }
@@ -149,7 +148,7 @@ module open_libra::coin {
     }
 
     /// This should be called by on-chain governance to update the config and allow
-    // or disallow upgradability of total supply.
+    /// or disallow upgradability of total supply.
     public fun allow_supply_upgrades(open_libra: &signer, allowed: bool) acquires SupplyConfig {
         system_addresses::assert_open_libra(open_libra);
         let allow_upgrades = &mut borrow_global_mut<SupplyConfig>(@open_libra).allow_upgrades;

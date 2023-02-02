@@ -43,14 +43,14 @@ module open_libra::ol_coin {
 
         let (burn_cap, freeze_cap, mint_cap) = coin::initialize_with_parallelizable_supply<OLCoin>(
             open_libra,
-            string::utf8(b"OL Coin"),
+            string::utf8(b"OLCoin"),
             string::utf8(b"OL"),
             8, /* decimals */
             true, /* monitor_supply */
         );
 
-        // OL framework needs mint cap to mint coins to initial validators. This will be revoked once the validators
-        // have been initialized.
+        // OL framework needs mint cap to mint coins to initial validators. This will be revoked once
+	// the validators have been initialized.
         move_to(open_libra, MintCapStore { mint_cap });
 
         coin::destroy_freeze_cap(freeze_cap);
@@ -61,16 +61,16 @@ module open_libra::ol_coin {
         exists<MintCapStore>(signer::address_of(account))
     }
 
-    /// Only called during genesis to destroy the ol framework account's mint capability once all initial validators
-    /// and accounts have been initialized during genesis.
+    /// Only called during genesis to destroy the ol framework account's mint capability once all
+    /// initial validators and accounts have been initialized during genesis.
     public(friend) fun destroy_mint_cap(open_libra: &signer) acquires MintCapStore {
         system_addresses::assert_open_libra(open_libra);
         let MintCapStore { mint_cap } = move_from<MintCapStore>(@open_libra);
         coin::destroy_mint_cap(mint_cap);
     }
 
-    /// Can only be called during genesis for tests to grant mint capability to ol framework and core resources
-    /// accounts.
+    /// Can only be called during genesis for tests to grant mint capability to open libra and core
+    /// resources accounts.
     public(friend) fun configure_accounts_for_test(
         open_libra: &signer,
         core_resources: &signer,

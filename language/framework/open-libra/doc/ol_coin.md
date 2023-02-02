@@ -207,14 +207,14 @@ Can only called during genesis to initialize the OL coin.
 
     <b>let</b> (burn_cap, freeze_cap, mint_cap) = <a href="coin.md#0x1_coin_initialize_with_parallelizable_supply">coin::initialize_with_parallelizable_supply</a>&lt;<a href="ol_coin.md#0x1_ol_coin_OLCoin">OLCoin</a>&gt;(
         open_libra,
-        <a href="../../std/doc/string.md#0x1_string_utf8">string::utf8</a>(b"OL Coin"),
+        <a href="../../std/doc/string.md#0x1_string_utf8">string::utf8</a>(b"OpenLibraCoin"),
         <a href="../../std/doc/string.md#0x1_string_utf8">string::utf8</a>(b"OL"),
         8, /* decimals */
         <b>true</b>, /* monitor_supply */
     );
 
-    // OL framework needs mint cap <b>to</b> mint coins <b>to</b> initial validators. This will be revoked once the validators
-    // have been initialized.
+    // OL framework needs mint cap <b>to</b> mint coins <b>to</b> initial validators. This will be revoked once
+	// the validators have been initialized.
     <b>move_to</b>(open_libra, <a href="ol_coin.md#0x1_ol_coin_MintCapStore">MintCapStore</a> { mint_cap });
 
     <a href="coin.md#0x1_coin_destroy_freeze_cap">coin::destroy_freeze_cap</a>(freeze_cap);
@@ -254,8 +254,8 @@ Can only called during genesis to initialize the OL coin.
 
 ## Function `destroy_mint_cap`
 
-Only called during genesis to destroy the ol framework account's mint capability once all initial validators
-and accounts have been initialized during genesis.
+Only called during genesis to destroy the ol framework account's mint capability once all
+initial validators and accounts have been initialized during genesis.
 
 
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="ol_coin.md#0x1_ol_coin_destroy_mint_cap">destroy_mint_cap</a>(open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>)
@@ -282,8 +282,8 @@ and accounts have been initialized during genesis.
 
 ## Function `configure_accounts_for_test`
 
-Can only be called during genesis for tests to grant mint capability to ol framework and core resources
-accounts.
+Can only be called during genesis for tests to grant mint capability to open libra and core
+resources accounts.
 
 
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="ol_coin.md#0x1_ol_coin_configure_accounts_for_test">configure_accounts_for_test</a>(open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>, core_resources: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>, mint_cap: <a href="coin.md#0x1_coin_MintCapability">coin::MintCapability</a>&lt;<a href="ol_coin.md#0x1_ol_coin_OLCoin">ol_coin::OLCoin</a>&gt;)

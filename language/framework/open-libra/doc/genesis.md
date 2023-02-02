@@ -6,11 +6,12 @@
 
 
 -  [Struct `AccountMap`](#0x1_genesis_AccountMap)
--  [Struct `EmployeeAccountMap`](#0x1_genesis_EmployeeAccountMap)
+-  [Struct `ExistingAccountMap`](#0x1_genesis_ExistingAccountMap)
 -  [Struct `ValidatorConfiguration`](#0x1_genesis_ValidatorConfiguration)
 -  [Struct `ValidatorConfigurationWithCommission`](#0x1_genesis_ValidatorConfigurationWithCommission)
 -  [Constants](#@Constants_0)
 -  [Function `initialize`](#0x1_genesis_initialize)
+-  [Function `initialize_ol_coin`](#0x1_genesis_initialize_ol_coin)
 -  [Function `initialize_core_resources_and_ol_coin`](#0x1_genesis_initialize_core_resources_and_ol_coin)
 -  [Function `create_accounts`](#0x1_genesis_create_accounts)
 -  [Function `create_account`](#0x1_genesis_create_account)
@@ -40,6 +41,7 @@
 <b>use</b> <a href="timestamp.md#0x1_timestamp">0x1::timestamp</a>;
 <b>use</b> <a href="transaction_fee.md#0x1_transaction_fee">0x1::transaction_fee</a>;
 <b>use</b> <a href="transaction_validation.md#0x1_transaction_validation">0x1::transaction_validation</a>;
+<b>use</b> <a href="validator.md#0x1_validator">0x1::validator</a>;
 <b>use</b> <a href="../../std/doc/vector.md#0x1_vector">0x1::vector</a>;
 <b>use</b> <a href="version.md#0x1_version">0x1::version</a>;
 </code></pre>
@@ -79,13 +81,14 @@
 
 </details>
 
-<a name="0x1_genesis_EmployeeAccountMap"></a>
+<a name="0x1_genesis_ExistingAccountMap"></a>
 
-## Struct `EmployeeAccountMap`
+## Struct `ExistingAccountMap`
+
+Map containing accounts which existed pre-genesis.
 
 
-
-<pre><code><b>struct</b> <a href="genesis.md#0x1_genesis_EmployeeAccountMap">EmployeeAccountMap</a> <b>has</b> <b>copy</b>, drop
+<pre><code><b>struct</b> <a href="genesis.md#0x1_genesis_ExistingAccountMap">ExistingAccountMap</a> <b>has</b> <b>copy</b>, drop
 </code></pre>
 
 
@@ -102,25 +105,7 @@
 
 </dd>
 <dt>
-<code>validator: <a href="genesis.md#0x1_genesis_ValidatorConfigurationWithCommission">genesis::ValidatorConfigurationWithCommission</a></code>
-</dt>
-<dd>
-
-</dd>
-<dt>
-<code>vesting_schedule_numerator: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u64&gt;</code>
-</dt>
-<dd>
-
-</dd>
-<dt>
-<code>vesting_schedule_denominator: u64</code>
-</dt>
-<dd>
-
-</dd>
-<dt>
-<code>beneficiary_resetter: <b>address</b></code>
+<code>allocations: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u64&gt;</code>
 </dt>
 <dd>
 
@@ -165,7 +150,7 @@
 
 </dd>
 <dt>
-<code>stake_amount: u64</code>
+<code>initial_allocation: u64</code>
 </dt>
 <dd>
 
@@ -268,7 +253,7 @@
 Genesis step 1: Initialize ol framework account and core modules on chain.
 
 
-<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_initialize">initialize</a>(<a href="gas_schedule.md#0x1_gas_schedule">gas_schedule</a>: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u8&gt;, <a href="chain_id.md#0x1_chain_id">chain_id</a>: u8, initial_version: u64, <a href="consensus_config.md#0x1_consensus_config">consensus_config</a>: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u8&gt;, epoch_interval_microsecs: u64, _minimum_stake: u64, _maximum_stake: u64, _recurring_lockup_duration_secs: u64, _allow_validator_set_change: bool, _rewards_rate: u64, _rewards_rate_denominator: u64, _voting_power_increase_limit: u64)
+<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_initialize">initialize</a>(<a href="gas_schedule.md#0x1_gas_schedule">gas_schedule</a>: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u8&gt;, <a href="chain_id.md#0x1_chain_id">chain_id</a>: u8, initial_version: u64, <a href="consensus_config.md#0x1_consensus_config">consensus_config</a>: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u8&gt;, epoch_interval_microsecs: u64, _vdf_difficulty: u64, _vdf_threshold: u64, _recurring_lockup_duration_secs: u64, _allow_validator_set_change: bool, _rewards_rate: u64, _rewards_rate_denominator: u64, _voting_power_increase_limit: u64)
 </code></pre>
 
 
@@ -283,16 +268,16 @@ Genesis step 1: Initialize ol framework account and core modules on chain.
     initial_version: u64,
     <a href="consensus_config.md#0x1_consensus_config">consensus_config</a>: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u8&gt;,
     epoch_interval_microsecs: u64,
-    _minimum_stake: u64,
-    _maximum_stake: u64,
+	_vdf_difficulty: u64,
+	_vdf_threshold: u64,
     _recurring_lockup_duration_secs: u64,
     _allow_validator_set_change: bool,
     _rewards_rate: u64,
     _rewards_rate_denominator: u64,
     _voting_power_increase_limit: u64,
 ) {
-    // Initialize the ol framework <a href="account.md#0x1_account">account</a>. This is the <a href="account.md#0x1_account">account</a> <b>where</b> system resources and modules will be
-    // deployed <b>to</b>. This will be entirely managed by on-chain governance and no entities have the key or privileges
+    // Initialize the open libra <a href="account.md#0x1_account">account</a>. This is the <a href="account.md#0x1_account">account</a> <b>where</b> system resources and modules
+	// will be deployed <b>to</b>. This will be entirely managed by on-chain governance and no entities have the key or privileges
     // <b>to</b> <b>use</b> this <a href="account.md#0x1_account">account</a>.
     <b>let</b> (open_libra, _ol_signer_cap) = <a href="account.md#0x1_account_create_framework_reserved_account">account::create_framework_reserved_account</a>(@open_libra);
     // Initialize <a href="account.md#0x1_account">account</a> configs on ol framework <a href="account.md#0x1_account">account</a>.
@@ -309,23 +294,24 @@ Genesis step 1: Initialize ol framework account and core modules on chain.
     // Give the decentralized on-chain governance control over the core framework <a href="account.md#0x1_account">account</a>.
     // governance::store_signer_cap(&open_libra, @open_libra, open_libra_signer_cap);
 
-    // put reserved framework reserved accounts under ol governance
-    // <b>let</b> framework_reserved_addresses = <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<b>address</b>&gt;[@0x2, @0x3, @0x4, @0x5, @0x6, @0x7, @0x8, @0x9, @0xa];
-    // <b>while</b> (!<a href="../../std/doc/vector.md#0x1_vector_is_empty">vector::is_empty</a>(&framework_reserved_addresses)) {
-    //     <b>let</b> <b>address</b> = <a href="../../std/doc/vector.md#0x1_vector_pop_back">vector::pop_back</a>&lt;<b>address</b>&gt;(&<b>mut</b> framework_reserved_addresses);
-    //     <b>let</b> (open_libra, framework_signer_cap) = <a href="account.md#0x1_account_create_framework_reserved_account">account::create_framework_reserved_account</a>(<b>address</b>);
-    //     governance::store_signer_cap(&open_libra, <b>address</b>, framework_signer_cap);
+    // Give governance control over the reserved addresses.
+    // <b>let</b> reserved_addresses = <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<b>address</b>&gt;[@0x2, @0x3, @0x4, @0x5, @0x6, @0x7, @0x8, @0x9, @0xa];
+    // <b>while</b> (!<a href="../../std/doc/vector.md#0x1_vector_is_empty">vector::is_empty</a>(&reserved_addresses)) {
+    //     <b>let</b> <b>address</b> = <a href="../../std/doc/vector.md#0x1_vector_pop_back">vector::pop_back</a>&lt;<b>address</b>&gt;(&<b>mut</b> reserved_addresses);
+    //     <b>let</b> (open_libra, reserved_signer_cap) = account::create_reserved_account(<b>address</b>);
+    //     governance::store_signer_cap(&open_libra, <b>address</b>, reserved_signer_cap);
     // };
 
     <a href="consensus_config.md#0x1_consensus_config_initialize">consensus_config::initialize</a>(&open_libra, <a href="consensus_config.md#0x1_consensus_config">consensus_config</a>);
     <a href="version.md#0x1_version_initialize">version::initialize</a>(&open_libra, initial_version);
 
+    <a href="validator.md#0x1_validator_initialize">validator::initialize</a>(&open_libra);
+
 	// 0L-TODO
-    // stake::initialize(&open_libra);
-    // staking_config::initialize(
+    // tower_config::initialize(
     //     &open_libra,
-    //     minimum_stake,
-    //     maximum_stake,
+    //     vdf_difficulty,
+    //     vdf_threshold,
     //     recurring_lockup_duration_secs,
     //     allow_validator_set_change,
     //     rewards_rate,
@@ -345,6 +331,34 @@ Genesis step 1: Initialize ol framework account and core modules on chain.
     <a href="block.md#0x1_block_initialize">block::initialize</a>(&open_libra, epoch_interval_microsecs);
     <a href="state_storage.md#0x1_state_storage_initialize">state_storage::initialize</a>(&open_libra);
     <a href="timestamp.md#0x1_timestamp_set_time_has_started">timestamp::set_time_has_started</a>(&open_libra);
+}
+</code></pre>
+
+
+
+</details>
+
+<a name="0x1_genesis_initialize_ol_coin"></a>
+
+## Function `initialize_ol_coin`
+
+
+
+<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_initialize_ol_coin">initialize_ol_coin</a>(open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_initialize_ol_coin">initialize_ol_coin</a>(open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>) {
+    <b>let</b> (burn_cap, mint_cap) = <a href="ol_coin.md#0x1_ol_coin_initialize">ol_coin::initialize</a>(open_libra);
+    // Give the `<a href="validator.md#0x1_validator">validator</a>` <b>module</b> MintCapability&lt;OLCoin&gt; so it can mint rewards.
+    <a href="validator.md#0x1_validator_store_ol_coin_mint_cap">validator::store_ol_coin_mint_cap</a>(open_libra, mint_cap);
+    // Give <a href="transaction_fee.md#0x1_transaction_fee">transaction_fee</a> <b>module</b> BurnCapability&lt;OLCoin&gt; so it can burn gas.
+    <a href="transaction_fee.md#0x1_transaction_fee_store_ol_coin_burn_cap">transaction_fee::store_ol_coin_burn_cap</a>(open_libra, burn_cap);
 }
 </code></pre>
 
@@ -373,9 +387,8 @@ Only called for testnets and e2e tests.
     core_resources_auth_key: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u8&gt;,
 ) {
     <b>let</b> (burn_cap, mint_cap) = <a href="ol_coin.md#0x1_ol_coin_initialize">ol_coin::initialize</a>(open_libra);
-	// 0L-TODO
-    // Give stake <b>module</b> MintCapability&lt;OLCoin&gt; so it can mint rewards.
-    // stake::store_ol_coin_mint_cap(open_libra, mint_cap);
+    // Give `<a href="validator.md#0x1_validator">validator</a>` <b>module</b> MintCapability&lt;OLCoin&gt; so it can mint rewards.
+    <a href="validator.md#0x1_validator_store_ol_coin_mint_cap">validator::store_ol_coin_mint_cap</a>(open_libra, mint_cap);
     // Give <a href="transaction_fee.md#0x1_transaction_fee">transaction_fee</a> <b>module</b> BurnCapability&lt;OLCoin&gt; so it can burn gas.
     <a href="transaction_fee.md#0x1_transaction_fee_store_ol_coin_burn_cap">transaction_fee::store_ol_coin_burn_cap</a>(open_libra, burn_cap);
 
@@ -471,7 +484,7 @@ If it exists, it just returns the signer.
 
 
 
-<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_create_initialize_validators_with_commission">create_initialize_validators_with_commission</a>(open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>, use_staking_contract: bool, validators: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_ValidatorConfigurationWithCommission">genesis::ValidatorConfigurationWithCommission</a>&gt;)
+<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_create_initialize_validators_with_commission">create_initialize_validators_with_commission</a>(open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>, validators: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_ValidatorConfigurationWithCommission">genesis::ValidatorConfigurationWithCommission</a>&gt;)
 </code></pre>
 
 
@@ -482,24 +495,22 @@ If it exists, it just returns the signer.
 
 <pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_create_initialize_validators_with_commission">create_initialize_validators_with_commission</a>(
     open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>,
-    use_staking_contract: bool,
     validators: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_ValidatorConfigurationWithCommission">ValidatorConfigurationWithCommission</a>&gt;,
 ) {
     <b>let</b> i = 0;
     <b>let</b> num_validators = <a href="../../std/doc/vector.md#0x1_vector_length">vector::length</a>(&validators);
     <b>while</b> (i &lt; num_validators) {
-        <b>let</b> validator = <a href="../../std/doc/vector.md#0x1_vector_borrow">vector::borrow</a>(&validators, i);
-        <a href="genesis.md#0x1_genesis_create_initialize_validator">create_initialize_validator</a>(open_libra, validator, use_staking_contract);
-
+        <b>let</b> <a href="validator.md#0x1_validator">validator</a> = <a href="../../std/doc/vector.md#0x1_vector_borrow">vector::borrow</a>(&validators, i);
+        <a href="genesis.md#0x1_genesis_create_initialize_validator">create_initialize_validator</a>(open_libra, <a href="validator.md#0x1_validator">validator</a>);
         i = i + 1;
     };
 
-    // Destroy the ol framework <a href="account.md#0x1_account">account</a>'s ability <b>to</b> mint coins now that we're done <b>with</b> setting up the initial
+    // Destroy open libras ability <b>to</b> mint coins now that we're done <b>with</b> setting up the initial
     // validators.
     <a href="ol_coin.md#0x1_ol_coin_destroy_mint_cap">ol_coin::destroy_mint_cap</a>(open_libra);
 
-	// 0L-TODO
-    // stake::on_new_epoch();
+	// 0L-TODO: Transition <b>to</b> the next epoch
+    // validator::on_new_epoch();
 }
 </code></pre>
 
@@ -549,7 +560,7 @@ encoded in a single BCS byte array.
         i = i + 1;
     };
 
-    <a href="genesis.md#0x1_genesis_create_initialize_validators_with_commission">create_initialize_validators_with_commission</a>(open_libra, <b>false</b>, validators_with_commission);
+    <a href="genesis.md#0x1_genesis_create_initialize_validators_with_commission">create_initialize_validators_with_commission</a>(open_libra, validators_with_commission);
 }
 </code></pre>
 
@@ -563,7 +574,7 @@ encoded in a single BCS byte array.
 
 
 
-<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_create_initialize_validator">create_initialize_validator</a>(open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>, commission_config: &<a href="genesis.md#0x1_genesis_ValidatorConfigurationWithCommission">genesis::ValidatorConfigurationWithCommission</a>, _use_staking_contract: bool)
+<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_create_initialize_validator">create_initialize_validator</a>(open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>, commission_config: &<a href="genesis.md#0x1_genesis_ValidatorConfigurationWithCommission">genesis::ValidatorConfigurationWithCommission</a>)
 </code></pre>
 
 
@@ -575,38 +586,37 @@ encoded in a single BCS byte array.
 <pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_create_initialize_validator">create_initialize_validator</a>(
     open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>,
     commission_config: &<a href="genesis.md#0x1_genesis_ValidatorConfigurationWithCommission">ValidatorConfigurationWithCommission</a>,
-    _use_staking_contract: bool,
 ) {
-    <b>let</b> validator = &commission_config.validator_config;
+    <b>let</b> <a href="validator.md#0x1_validator">validator</a> = &commission_config.validator_config;
 
-    <b>let</b> _owner = &<a href="genesis.md#0x1_genesis_create_account">create_account</a>(open_libra, validator.owner_address, validator.stake_amount);
-    <a href="genesis.md#0x1_genesis_create_account">create_account</a>(open_libra, validator.operator_address, 0);
-    <a href="genesis.md#0x1_genesis_create_account">create_account</a>(open_libra, validator.voter_address, 0);
+    <b>let</b> _owner = &<a href="genesis.md#0x1_genesis_create_account">create_account</a>(open_libra, <a href="validator.md#0x1_validator">validator</a>.owner_address, <a href="validator.md#0x1_validator">validator</a>.initial_allocation);
+    <a href="genesis.md#0x1_genesis_create_account">create_account</a>(open_libra, <a href="validator.md#0x1_validator">validator</a>.operator_address, 0);
+    <a href="genesis.md#0x1_genesis_create_account">create_account</a>(open_libra, <a href="validator.md#0x1_validator">validator</a>.voter_address, 0);
 
 	// 0L-TODO
-    // Initialize the stake pool and join the validator set.
+    // Initialize the stake pool and join the <a href="validator.md#0x1_validator">validator</a> set.
     // <b>let</b> pool_address = <b>if</b> (use_staking_contract) {
     //     staking_contract::create_staking_contract(
     //         owner,
-    //         validator.operator_address,
-    //         validator.voter_address,
-    //         validator.stake_amount,
+    //         <a href="validator.md#0x1_validator">validator</a>.operator_address,
+    //         <a href="validator.md#0x1_validator">validator</a>.voter_address,
+    //         <a href="validator.md#0x1_validator">validator</a>.stake_amount,
     //         commission_config.commission_percentage,
     //         x"",
     //     );
-    //     staking_contract::stake_pool_address(validator.owner_address, validator.operator_address)
+    //     staking_contract::stake_pool_address(<a href="validator.md#0x1_validator">validator</a>.owner_address, <a href="validator.md#0x1_validator">validator</a>.operator_address)
     // } <b>else</b> {
     //     stake::initialize_stake_owner(
     //         owner,
-    //         validator.stake_amount,
-    //         validator.operator_address,
-    //         validator.voter_address,
+    //         <a href="validator.md#0x1_validator">validator</a>.stake_amount,
+    //         <a href="validator.md#0x1_validator">validator</a>.operator_address,
+    //         <a href="validator.md#0x1_validator">validator</a>.voter_address,
     //     );
-    //     validator.owner_address
+    //     <a href="validator.md#0x1_validator">validator</a>.owner_address
     // };
 
     // <b>if</b> (commission_config.join_during_genesis) {
-    //     <a href="genesis.md#0x1_genesis_initialize_validator">initialize_validator</a>(pool_address, validator);
+    //     <a href="genesis.md#0x1_genesis_initialize_validator">initialize_validator</a>(pool_address, <a href="validator.md#0x1_validator">validator</a>);
     // };
 }
 </code></pre>
@@ -621,7 +631,7 @@ encoded in a single BCS byte array.
 
 
 
-<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_initialize_validator">initialize_validator</a>(_pool_address: <b>address</b>, validator: &<a href="genesis.md#0x1_genesis_ValidatorConfiguration">genesis::ValidatorConfiguration</a>)
+<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_initialize_validator">initialize_validator</a>(_pool_address: <b>address</b>, <a href="validator.md#0x1_validator">validator</a>: &<a href="genesis.md#0x1_genesis_ValidatorConfiguration">genesis::ValidatorConfiguration</a>)
 </code></pre>
 
 
@@ -630,21 +640,21 @@ encoded in a single BCS byte array.
 <summary>Implementation</summary>
 
 
-<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_initialize_validator">initialize_validator</a>(_pool_address: <b>address</b>, validator: &<a href="genesis.md#0x1_genesis_ValidatorConfiguration">ValidatorConfiguration</a>) {
-    <b>let</b> _operator = &<a href="create_signer.md#0x1_create_signer">create_signer</a>(validator.operator_address);
+<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_initialize_validator">initialize_validator</a>(_pool_address: <b>address</b>, <a href="validator.md#0x1_validator">validator</a>: &<a href="genesis.md#0x1_genesis_ValidatorConfiguration">ValidatorConfiguration</a>) {
+    <b>let</b> _operator = &<a href="create_signer.md#0x1_create_signer">create_signer</a>(<a href="validator.md#0x1_validator">validator</a>.operator_address);
 
 	// 0L-TODO
     // stake::rotate_consensus_key(
     //     operator,
     //     pool_address,
-    //     validator.consensus_pubkey,
-    //     validator.proof_of_possession,
+    //     <a href="validator.md#0x1_validator">validator</a>.consensus_pubkey,
+    //     <a href="validator.md#0x1_validator">validator</a>.proof_of_possession,
     // );
     // stake::update_network_and_fullnode_addresses(
     //     operator,
     //     pool_address,
-    //     validator.network_addresses,
-    //     validator.full_node_network_addresses,
+    //     <a href="validator.md#0x1_validator">validator</a>.network_addresses,
+    //     <a href="validator.md#0x1_validator">validator</a>.full_node_network_addresses,
     // );
     // stake::join_validator_set_internal(operator, pool_address);
 }
@@ -685,7 +695,7 @@ The last step of genesis.
 
 
 
-<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_initialize_for_verification">initialize_for_verification</a>(<a href="gas_schedule.md#0x1_gas_schedule">gas_schedule</a>: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u8&gt;, <a href="chain_id.md#0x1_chain_id">chain_id</a>: u8, initial_version: u64, <a href="consensus_config.md#0x1_consensus_config">consensus_config</a>: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u8&gt;, epoch_interval_microsecs: u64, minimum_stake: u64, maximum_stake: u64, recurring_lockup_duration_secs: u64, allow_validator_set_change: bool, rewards_rate: u64, rewards_rate_denominator: u64, voting_power_increase_limit: u64, open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>, _min_voting_threshold: u128, _required_proposer_stake: u64, _voting_duration_secs: u64, accounts: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_AccountMap">genesis::AccountMap</a>&gt;, _employee_vesting_start: u64, _employee_vesting_period_duration: u64, _employees: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_EmployeeAccountMap">genesis::EmployeeAccountMap</a>&gt;, validators: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_ValidatorConfigurationWithCommission">genesis::ValidatorConfigurationWithCommission</a>&gt;)
+<pre><code><b>fun</b> <a href="genesis.md#0x1_genesis_initialize_for_verification">initialize_for_verification</a>(<a href="gas_schedule.md#0x1_gas_schedule">gas_schedule</a>: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u8&gt;, <a href="chain_id.md#0x1_chain_id">chain_id</a>: u8, initial_version: u64, <a href="consensus_config.md#0x1_consensus_config">consensus_config</a>: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u8&gt;, epoch_interval_microsecs: u64, minimum_stake: u64, maximum_stake: u64, recurring_lockup_duration_secs: u64, allow_validator_set_change: bool, rewards_rate: u64, rewards_rate_denominator: u64, voting_power_increase_limit: u64, open_libra: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>, _min_voting_threshold: u128, _required_proposer_stake: u64, _voting_duration_secs: u64, accounts: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_AccountMap">genesis::AccountMap</a>&gt;, validators: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_ValidatorConfigurationWithCommission">genesis::ValidatorConfigurationWithCommission</a>&gt;)
 </code></pre>
 
 
@@ -712,9 +722,9 @@ The last step of genesis.
     _required_proposer_stake: u64,
     _voting_duration_secs: u64,
     accounts: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_AccountMap">AccountMap</a>&gt;,
-    _employee_vesting_start: u64,
-    _employee_vesting_period_duration: u64,
-    _employees: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_EmployeeAccountMap">EmployeeAccountMap</a>&gt;,
+    // _employee_vesting_start: u64,
+    // _employee_vesting_period_duration: u64,
+    // _employees: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;EmployeeAccountMap&gt;,
     validators: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<a href="genesis.md#0x1_genesis_ValidatorConfigurationWithCommission">ValidatorConfigurationWithCommission</a>&gt;
 ) {
     <a href="genesis.md#0x1_genesis_initialize">initialize</a>(
@@ -732,7 +742,7 @@ The last step of genesis.
         voting_power_increase_limit
     );
     <a href="../../std/doc/features.md#0x1_features_change_feature_flags">features::change_feature_flags</a>(open_libra, <a href="../../std/doc/vector.md#0x1_vector">vector</a>[1, 2], <a href="../../std/doc/vector.md#0x1_vector">vector</a>[]);
-    // initialize_ol_coin(open_libra);
+    <a href="genesis.md#0x1_genesis_initialize_ol_coin">initialize_ol_coin</a>(open_libra);
     // governance::initialize_for_verification(
     //     open_libra,
     //     min_voting_threshold,
@@ -741,7 +751,7 @@ The last step of genesis.
     // );
     <a href="genesis.md#0x1_genesis_create_accounts">create_accounts</a>(open_libra, accounts);
     // create_employee_validators(employee_vesting_start, employee_vesting_period_duration, employees);
-    <a href="genesis.md#0x1_genesis_create_initialize_validators_with_commission">create_initialize_validators_with_commission</a>(open_libra, <b>true</b>, validators);
+    <a href="genesis.md#0x1_genesis_create_initialize_validators_with_commission">create_initialize_validators_with_commission</a>(open_libra, validators);
     <a href="genesis.md#0x1_genesis_set_genesis_end">set_genesis_end</a>(open_libra);
 }
 </code></pre>
