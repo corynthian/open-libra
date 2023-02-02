@@ -11,17 +11,17 @@
 //!
 //! Set env REGENERATE_GOLDENFILES to update the golden files when running tests..
 
-mod account_universe;
-//mod create_account;
-//mod data_store;
-//mod execution_strategies;
-//mod failed_transaction_tests;
-//mod genesis;
-//mod genesis_initializations;
-//mod mint;
-//mod module_publishing;
-//mod on_chain_configs;
-//mod peer_to_peer;
-//mod scripts;
-//mod transaction_fuzzer;
-//mod verify_txn;
+// works: mod account_universe;
+// works: mod create_account;
+// works: mod data_store;
+// works: mod execution_strategies;
+// works: mod failed_transaction_tests;
+// works: mod genesis;
+// works: mod genesis_initializations;
+// works: mod mint;
+// works: mod module_publishing;
+mod on_chain_configs;
+// works: mod peer_to_peer;
+// works: mod scripts;
+// works: mod transaction_fuzzer;
+// works: mod verify_txn;
