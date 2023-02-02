@@ -19,6 +19,6 @@ impl ApprovedExecutionHashes {
 }
 
 impl OnChainConfig for ApprovedExecutionHashes {
-    const MODULE_IDENTIFIER: &'static str = "ol_governance";
+    const MODULE_IDENTIFIER: &'static str = "governance";
     const TYPE_IDENTIFIER: &'static str = "ApprovedExecutionHashes";
 }

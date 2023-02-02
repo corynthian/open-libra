@@ -12,7 +12,7 @@ pub static OL_COIN_TYPE: Lazy<TypeTag> = Lazy::new(|| {
     TypeTag::Struct(Box::new(StructTag {
         address: AccountAddress::ONE,
         module: ident_str!("ol_coin").to_owned(),
-        name: ident_str!("OpenLibraCoin").to_owned(),
+        name: ident_str!("OLCoin").to_owned(),
         type_params: vec![],
     }))
 });

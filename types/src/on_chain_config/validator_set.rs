@@ -94,8 +94,7 @@ impl ValidatorSet {
 }
 
 impl OnChainConfig for ValidatorSet {
-    // validator_set_address
-    const MODULE_IDENTIFIER: &'static str = "validator_set";
+    const MODULE_IDENTIFIER: &'static str = "validator";
     const TYPE_IDENTIFIER: &'static str = "ValidatorSet";
 }
 
