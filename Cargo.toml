@@ -252,6 +252,7 @@ tonic = { version = "0.8.3", features = ["tls-roots", "transport", "prost", "gzi
 ureq = { version = "1.5.4", features = ["json", "native-tls"], default_features = false }
 url = { version = "2.2.2", features = ["serde"] }
 uuid = { version = "1.0.0", features = ["v4", "serde"] }
+vdf = { git = "https://github.com/poanetwork/vdf" }
 walkdir = "2.3.2"
 warp = { version = "0.3.2", features = ["tls"] }
 warp-reverse-proxy = "0.5.0"
