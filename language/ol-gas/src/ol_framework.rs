@@ -4,7 +4,7 @@
 use crate::gas_meter::EXECUTION_GAS_MULTIPLIER as MUL;
 use ol_framework::natives::GasParameters;
 
-crate::natives::define_gas_parameters_for_natives!(GasParameters, "ol_framework", [
+crate::natives::define_gas_parameters_for_natives!(GasParameters, "open_libra", [
     [.account.create_address.base, "account.create_address.base", 300 * MUL],
     [.account.create_signer.base, "account.create_signer.base", 300 * MUL],
 

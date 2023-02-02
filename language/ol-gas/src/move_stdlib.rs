@@ -10,7 +10,7 @@ const UNIT_TEST_ENTRIES: usize = 0;
 #[cfg(all(test, feature = "testing"))]
 const UNIT_TEST_ENTRIES: usize = 2;
 
-crate::natives::define_gas_parameters_for_natives!(GasParameters, "move_stdlib", [
+crate::natives::define_gas_parameters_for_natives!(GasParameters, "std", [
     [.bcs.to_bytes.per_byte_serialized, "bcs.to_bytes.per_byte_serialized", 10 * MUL],
     [.bcs.to_bytes.failure, "bcs.to_bytes.failure", 1000 * MUL],
 

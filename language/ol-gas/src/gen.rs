@@ -67,8 +67,8 @@ fn generate_script(gas_schedule: &GasScheduleV2) -> Result<String> {
 
     // 0L-TODO: Modify script for 0L governance
 
-    emitln!(writer, "use ol_framework::ol_governance;");
-    emitln!(writer, "use ol_framework::gas_schedule;");
+    // emitln!(writer, "use open_libra::governance;");
+    emitln!(writer, "use open_libra::gas_schedule;");
     emitln!(writer);
 
     emitln!(writer, "fun main(proposal_id: u64) {");
@@ -76,7 +76,7 @@ fn generate_script(gas_schedule: &GasScheduleV2) -> Result<String> {
 
     emitln!(
         writer,
-        "let framework_signer = ol_governance::resolve(proposal_id, @{});\n",
+        "let framework_signer = governance::resolve(proposal_id, @{});\n",
         AccountAddress::ONE,
     );
 
@@ -98,10 +98,10 @@ fn generate_script(gas_schedule: &GasScheduleV2) -> Result<String> {
     Ok(writer.process_result(|s| s.to_string()))
 }
 
-fn ol_framework_path() -> PathBuf {
+fn open_libra_path() -> PathBuf {
     Path::join(
         Path::new(env!("CARGO_MANIFEST_DIR")),
-        "../framework/ol-framework",
+        "../framework/open-libra",
     )
 }
 
@@ -119,7 +119,7 @@ pub fn generate_update_proposal(args: &GenArgs) -> Result<()> {
         &generate_script(&current_gas_schedule())?,
     );
     // TODO: use relative path here
-    pack.add_local_dep("OLFramework", &ol_framework_path().to_string_lossy());
+    pack.add_local_dep("OpenLibra", &open_libra_path().to_string_lossy());
 
     pack.write_to_disk(args.output.as_deref().unwrap_or("./proposal"))?;
 

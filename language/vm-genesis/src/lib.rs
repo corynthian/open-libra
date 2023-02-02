@@ -125,7 +125,7 @@ pub fn encode_ol_mainnet_genesis_transaction(
     );
     initialize_features(&mut session);
     initialize_ol_coin(&mut session);
-    initialize_on_chain_governance(&mut session, genesis_config);
+    //initialize_on_chain_governance(&mut session, genesis_config);
     create_accounts(&mut session, accounts);
     create_employee_validators(&mut session, employees, genesis_config);
     create_and_initialize_validators_with_commission(&mut session, validators);
@@ -235,7 +235,7 @@ pub fn encode_genesis_change_set(
     } else {
         initialize_ol_coin(&mut session);
     }
-    initialize_on_chain_governance(&mut session, genesis_config);
+    // initialize_on_chain_governance(&mut session, genesis_config);
     create_and_initialize_validators(&mut session, validators);
     if genesis_config.is_test {
         allow_core_resources_to_set_version(&mut session);
@@ -458,24 +458,24 @@ fn initialize_core_resources_and_ol_coin(
     );
 }
 
-/// Create and initialize Association and Core Code accounts.
-fn initialize_on_chain_governance(
-    session: &mut SessionExt<impl MoveResolver>,
-    genesis_config: &GenesisConfiguration,
-) {
-    exec_function(
-        session,
-        GOVERNANCE_MODULE_NAME,
-        "initialize",
-        vec![],
-        serialize_values(&vec![
-            MoveValue::Signer(CORE_CODE_ADDRESS),
-            MoveValue::U128(genesis_config.min_voting_threshold),
-            MoveValue::U64(genesis_config.required_proposer_stake),
-            MoveValue::U64(genesis_config.voting_duration_secs),
-        ]),
-    );
-}
+// Create and initialize Association and Core Code accounts.
+// fn initialize_on_chain_governance(
+//     session: &mut SessionExt<impl MoveResolver>,
+//     genesis_config: &GenesisConfiguration,
+// ) {
+//     exec_function(
+//         session,
+//         GOVERNANCE_MODULE_NAME,
+//         "initialize",
+//         vec![],
+//         serialize_values(&vec![
+//             MoveValue::Signer(CORE_CODE_ADDRESS),
+//             MoveValue::U128(genesis_config.min_voting_threshold),
+//             MoveValue::U64(genesis_config.required_proposer_stake),
+//             MoveValue::U64(genesis_config.voting_duration_secs),
+//         ]),
+//     );
+// }
 
 fn create_accounts(session: &mut SessionExt<impl MoveResolver>, accounts: &[AccountBalance]) {
     let accounts_bytes = bcs::to_bytes(accounts).expect("AccountMaps can be serialized");
