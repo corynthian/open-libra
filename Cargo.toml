@@ -8,12 +8,18 @@ members = [
     "crates/ol-crypto",
     "crates/ol-crypto-derive",
     "crates/ol-infallible",
+    "crates/ol-keygen",
     "crates/ol-log-derive",
     "crates/ol-logger",
+    "crates/ol-proptest-helpers",
     "language/ol-aggregator",
+    "language/ol-vm",
     "language/block-executor",
+    "language/e2e-tests",
+    "language/e2e-testsuite",
     "language/framework",
     "language/transaction-builder",
+    "language/vm-genesis",
     "storage/state-view",
 ]
 
@@ -45,25 +51,31 @@ rust-version = "1.64"
 # Please do not add any test features here: they should be declared by the individual crate.
 ol-protocol-constants = { path = "config/protocol-constants" }
 
-
 ol-infallible = { path = "crates/ol-infallible" }
 ol-log-derive = { path = "crates/ol-log-derive" }
 ol-logger = { path = "crates/ol-logger" }
 ol-bitvec = { path = "crates/ol-bitvec" }
 ol-crypto = { path = "crates/ol-crypto" }
 ol-crypto-derive = { path = "crates/ol-crypto-derive" }
+ol-keygen = { path = "crates/ol-keygen" }
 ol-metrics-core = { path = "crates/ol-metrics-core" }
+ol-proptest-helpers = { path = "crates/ol-proptest-helpers" }
 
 ol-aggregator = { path = "language/ol-aggregator" }
 ol-block-executor = { path = "language/block-executor" }
 ol-cached-packages = { path = "language/framework/cached-packages" }
 ol-gas-algebra-ext = { path = "language/ol-gas-algebra-ext" }
 ol-gas = { path = "language/ol-gas" }
+ol-language-e2e-tests = { path = "language/e2e-tests" }
+ol-language-e2e-testuite = { path = "language/e2e-testsuite" }
 ol-move-hashmap = { path = "language/move-hashmap" }
 ol-framework = { path = "language/framework" }
 ol-package-builder = { path = "language/package-builder" }
 ol-transaction-builder = { path = "language/transaction-builder" }
+ol-vm-genesis = { path = "language/vm-genesis" }
 ol-vm = { path = "language/ol-vm" }
+ol-writeset-generator = { path = "language/ol-writeset-generator" }
+
 ol-state-view = { path = "storage/state-view" }
 
 ol-types = { path = "types" }

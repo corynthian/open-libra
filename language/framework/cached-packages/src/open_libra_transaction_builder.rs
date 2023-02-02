@@ -164,7 +164,7 @@ pub enum EntryFunctionCall {
         to: AccountAddress,
     },
 
-    /// Batch version of APT transfer.
+    /// Batch version of OL transfer.
     OlAccountBatchTransfer {
         recipients: Vec<AccountAddress>,
         amounts: Vec<u64>,
@@ -183,8 +183,9 @@ pub enum EntryFunctionCall {
     /// Set whether `account` can receive direct transfers of coins that they have not explicitly registered to receive.
     OlAccountSetAllowDirectCoinTransfers { allow: bool },
 
-    /// Convenient function to transfer APT to a recipient account that might not exist.
-    /// This would create the recipient account first, which also registers it to receive APT, before transferring.
+    /// Convenient function to transfer OL to a recipient account that might not exist.
+    /// This would create the recipient account first, which also registers it to receive OL, before
+    /// transferring.
     OlAccountTransfer { to: AccountAddress, amount: u64 },
 
     /// Convenient function to transfer a custom CoinType to a recipient account that might not exist.
@@ -686,7 +687,7 @@ pub fn object_transfer_call(object_id: AccountAddress, to: AccountAddress) -> Tr
     ))
 }
 
-/// Batch version of APT transfer.
+/// Batch version of OL transfer.
 pub fn ol_account_batch_transfer(
     recipients: Vec<AccountAddress>,
     amounts: Vec<u64>,
@@ -763,8 +764,9 @@ pub fn ol_account_set_allow_direct_coin_transfers(allow: bool) -> TransactionPay
     ))
 }
 
-/// Convenient function to transfer APT to a recipient account that might not exist.
-/// This would create the recipient account first, which also registers it to receive APT, before transferring.
+/// Convenient function to transfer OL to a recipient account that might not exist.
+/// This would create the recipient account first, which also registers it to receive OL, before
+/// transferring.
 pub fn ol_account_transfer(to: AccountAddress, amount: u64) -> TransactionPayload {
     TransactionPayload::EntryFunction(EntryFunction::new(
         ModuleId::new(

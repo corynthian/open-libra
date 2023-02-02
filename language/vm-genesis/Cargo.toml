@@ -1,0 +1,39 @@
+[package]
+name = "ol-vm-genesis"
+description = "0L vm genesis"
+version = "0.1.0"
+
+# Workspace inherited keys
+authors = { workspace = true }
+edition = { workspace = true }
+homepage = { workspace = true }
+license = { workspace = true }
+publish = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
+
+[dependencies]
+anyhow = { workspace = true }
+ol-cached-packages =  { workspace = true }
+ol-crypto = { workspace = true }
+ol-framework =  { workspace = true }
+ol-gas = { workspace = true }
+ol-state-view = { workspace = true }
+ol-types = { workspace = true }
+ol-vm = { workspace = true }
+bcs = { workspace = true }
+move-core-types = { workspace = true }
+move-vm-types = { workspace = true }
+once_cell = { workspace = true }
+rand = { workspace = true }
+serde = { workspace = true }
+
+[dev-dependencies]
+ol-proptest-helpers = { workspace = true }
+move-core-types = { workspace = true }
+proptest = { workspace = true }
+proptest-derive = { workspace = true }
+
+[features]
+default = []
+fuzzing = ["ol-types/fuzzing", "move-core-types/fuzzing", "move-vm-types/fuzzing"]

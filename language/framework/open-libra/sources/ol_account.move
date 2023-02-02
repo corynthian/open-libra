@@ -14,7 +14,7 @@ module open_libra::ol_account {
     /// Account does not exist.
     const EACCOUNT_NOT_FOUND: u64 = 1;
     /// Account is not registered to receive OL.
-    const EACCOUNT_NOT_REGISTERED_FOR_APT: u64 = 2;
+    const EACCOUNT_NOT_REGISTERED_FOR_OL: u64 = 2;
     /// Account opted out of receiving coins that they did not register to receive.
     const EACCOUNT_DOES_NOT_ACCEPT_DIRECT_COIN_TRANSFERS: u64 = 3;
     /// Account opted out of directly receiving NFT tokens.
@@ -44,7 +44,7 @@ module open_libra::ol_account {
         coin::register<OLCoin>(&signer);
     }
 
-    /// Batch version of APT transfer.
+    /// Batch version of OL transfer.
     public entry fun batch_transfer(source: &signer, recipients: vector<address>, amounts: vector<u64>) {
         let recipients_len = vector::length(&recipients);
         assert!(
@@ -61,13 +61,14 @@ module open_libra::ol_account {
         };
     }
 
-    /// Convenient function to transfer APT to a recipient account that might not exist.
-    /// This would create the recipient account first, which also registers it to receive APT, before transferring.
+    /// Convenient function to transfer OL to a recipient account that might not exist.
+    /// This would create the recipient account first, which also registers it to receive OL, before
+    /// transferring.
     public entry fun transfer(source: &signer, to: address, amount: u64) {
         if (!account::exists_at(to)) {
             create_account(to)
         };
-        // Resource accounts can be created without registering them to receive APT.
+        // Resource accounts can be created without registering them to receive OL.
         // This conveniently does the registration if necessary.
         if (!coin::is_account_registered<OLCoin>(to)) {
             coin::register<OLCoin>(&create_signer(to));
@@ -121,7 +122,7 @@ module open_libra::ol_account {
 
     public fun assert_account_is_registered_for_apt(addr: address) {
         assert_account_exists(addr);
-        assert!(coin::is_account_registered<OLCoin>(addr), error::not_found(EACCOUNT_NOT_REGISTERED_FOR_APT));
+        assert!(coin::is_account_registered<OLCoin>(addr), error::not_found(EACCOUNT_NOT_REGISTERED_FOR_OL));
     }
 
     /// Set whether `account` can receive direct transfers of coins that they have not explicitly registered to receive.

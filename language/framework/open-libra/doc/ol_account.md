@@ -141,12 +141,12 @@ Account does not exist.
 
 
 
-<a name="0x1_ol_account_EACCOUNT_NOT_REGISTERED_FOR_APT"></a>
+<a name="0x1_ol_account_EACCOUNT_NOT_REGISTERED_FOR_OL"></a>
 
 Account is not registered to receive OL.
 
 
-<pre><code><b>const</b> <a href="ol_account.md#0x1_ol_account_EACCOUNT_NOT_REGISTERED_FOR_APT">EACCOUNT_NOT_REGISTERED_FOR_APT</a>: u64 = 2;
+<pre><code><b>const</b> <a href="ol_account.md#0x1_ol_account_EACCOUNT_NOT_REGISTERED_FOR_OL">EACCOUNT_NOT_REGISTERED_FOR_OL</a>: u64 = 2;
 </code></pre>
 
 
@@ -191,7 +191,7 @@ Basic account creation methods.
 
 ## Function `batch_transfer`
 
-Batch version of APT transfer.
+Batch version of OL transfer.
 
 
 <pre><code><b>public</b> entry <b>fun</b> <a href="ol_account.md#0x1_ol_account_batch_transfer">batch_transfer</a>(source: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>, recipients: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;<b>address</b>&gt;, amounts: <a href="../../std/doc/vector.md#0x1_vector">vector</a>&lt;u64&gt;)
@@ -228,8 +228,9 @@ Batch version of APT transfer.
 
 ## Function `transfer`
 
-Convenient function to transfer APT to a recipient account that might not exist.
-This would create the recipient account first, which also registers it to receive APT, before transferring.
+Convenient function to transfer OL to a recipient account that might not exist.
+This would create the recipient account first, which also registers it to receive OL, before
+transferring.
 
 
 <pre><code><b>public</b> entry <b>fun</b> <a href="ol_account.md#0x1_ol_account_transfer">transfer</a>(source: &<a href="../../std/doc/signer.md#0x1_signer">signer</a>, <b>to</b>: <b>address</b>, amount: u64)
@@ -245,7 +246,7 @@ This would create the recipient account first, which also registers it to receiv
     <b>if</b> (!<a href="account.md#0x1_account_exists_at">account::exists_at</a>(<b>to</b>)) {
         <a href="ol_account.md#0x1_ol_account_create_account">create_account</a>(<b>to</b>)
     };
-    // Resource accounts can be created without registering them <b>to</b> receive APT.
+    // Resource accounts can be created without registering them <b>to</b> receive OL.
     // This conveniently does the registration <b>if</b> necessary.
     <b>if</b> (!<a href="coin.md#0x1_coin_is_account_registered">coin::is_account_registered</a>&lt;OLCoin&gt;(<b>to</b>)) {
         <a href="coin.md#0x1_coin_register">coin::register</a>&lt;OLCoin&gt;(&<a href="create_signer.md#0x1_create_signer">create_signer</a>(<b>to</b>));
@@ -399,7 +400,7 @@ This would create the recipient account first and register it to receive the Coi
 
 <pre><code><b>public</b> <b>fun</b> <a href="ol_account.md#0x1_ol_account_assert_account_is_registered_for_apt">assert_account_is_registered_for_apt</a>(addr: <b>address</b>) {
     <a href="ol_account.md#0x1_ol_account_assert_account_exists">assert_account_exists</a>(addr);
-    <b>assert</b>!(<a href="coin.md#0x1_coin_is_account_registered">coin::is_account_registered</a>&lt;OLCoin&gt;(addr), <a href="../../std/doc/error.md#0x1_error_not_found">error::not_found</a>(<a href="ol_account.md#0x1_ol_account_EACCOUNT_NOT_REGISTERED_FOR_APT">EACCOUNT_NOT_REGISTERED_FOR_APT</a>));
+    <b>assert</b>!(<a href="coin.md#0x1_coin_is_account_registered">coin::is_account_registered</a>&lt;OLCoin&gt;(addr), <a href="../../std/doc/error.md#0x1_error_not_found">error::not_found</a>(<a href="ol_account.md#0x1_ol_account_EACCOUNT_NOT_REGISTERED_FOR_OL">EACCOUNT_NOT_REGISTERED_FOR_OL</a>));
 }
 </code></pre>
 
