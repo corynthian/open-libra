@@ -238,6 +238,14 @@ pub enum EntryFunctionCall {
         code: Vec<Vec<u8>>,
     },
 
+    /// Initialize the validator account and give ownership to the signing account.
+    ValidatorInitializeValidator {
+        consensus_pubkey: Vec<u8>,
+        proof_of_possession: Vec<u8>,
+        network_addresses: Vec<u8>,
+        fullnode_addresses: Vec<u8>,
+    },
+
     /// Updates the major version to a larger version.
     /// This can be called by on chain governance.
     VersionSetVersion { major: u64 },
@@ -358,6 +366,17 @@ impl EntryFunctionCall {
                 seed,
                 metadata_serialized,
                 code,
+            ),
+            ValidatorInitializeValidator {
+                consensus_pubkey,
+                proof_of_possession,
+                network_addresses,
+                fullnode_addresses,
+            } => validator_initialize_validator(
+                consensus_pubkey,
+                proof_of_possession,
+                network_addresses,
+                fullnode_addresses,
             ),
             VersionSetVersion { major } => version_set_version(major),
         }
@@ -934,6 +953,32 @@ pub fn resource_account_create_resource_account_and_publish_package(
     ))
 }
 
+/// Initialize the validator account and give ownership to the signing account.
+pub fn validator_initialize_validator(
+    consensus_pubkey: Vec<u8>,
+    proof_of_possession: Vec<u8>,
+    network_addresses: Vec<u8>,
+    fullnode_addresses: Vec<u8>,
+) -> TransactionPayload {
+    TransactionPayload::EntryFunction(EntryFunction::new(
+        ModuleId::new(
+            AccountAddress::new([
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 1,
+            ]),
+            ident_str!("validator").to_owned(),
+        ),
+        ident_str!("initialize_validator").to_owned(),
+        vec![],
+        vec![
+            bcs::to_bytes(&consensus_pubkey).unwrap(),
+            bcs::to_bytes(&proof_of_possession).unwrap(),
+            bcs::to_bytes(&network_addresses).unwrap(),
+            bcs::to_bytes(&fullnode_addresses).unwrap(),
+        ],
+    ))
+}
+
 /// Updates the major version to a larger version.
 /// This can be called by on chain governance.
 pub fn version_set_version(major: u64) -> TransactionPayload {
@@ -1252,6 +1297,21 @@ mod decoder {
         }
     }
 
+    pub fn validator_initialize_validator(
+        payload: &TransactionPayload,
+    ) -> Option<EntryFunctionCall> {
+        if let TransactionPayload::EntryFunction(script) = payload {
+            Some(EntryFunctionCall::ValidatorInitializeValidator {
+                consensus_pubkey: bcs::from_bytes(script.args().get(0)?).ok()?,
+                proof_of_possession: bcs::from_bytes(script.args().get(1)?).ok()?,
+                network_addresses: bcs::from_bytes(script.args().get(2)?).ok()?,
+                fullnode_addresses: bcs::from_bytes(script.args().get(3)?).ok()?,
+            })
+        } else {
+            None
+        }
+    }
+
     pub fn version_set_version(payload: &TransactionPayload) -> Option<EntryFunctionCall> {
         if let TransactionPayload::EntryFunction(script) = payload {
             Some(EntryFunctionCall::VersionSetVersion {
@@ -1367,6 +1427,10 @@ static SCRIPT_FUNCTION_DECODER_MAP: once_cell::sync::Lazy<EntryFunctionDecoderMa
         map.insert(
             "resource_account_create_resource_account_and_publish_package".to_string(),
             Box::new(decoder::resource_account_create_resource_account_and_publish_package),
+        );
+        map.insert(
+            "validator_initialize_validator".to_string(),
+            Box::new(decoder::validator_initialize_validator),
         );
         map.insert(
             "version_set_version".to_string(),
