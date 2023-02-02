@@ -12,29 +12,21 @@ fn main() {
         // Get the previous directory
         let mut prev_dir = current_dir;
         prev_dir.pop();
-        // println!(
-        //     "cargo:rerun-if-changed={}",
-        //     prev_dir.join("ol-framework").join("sources").display()
-        // );
-        // println!(
-        //     "cargo:rerun-if-changed={}",
-        //     prev_dir.join("ol-framework").join("Move.toml").display()
-        // );
-        // println!(
-        //     "cargo:rerun-if-changed={}",
-        //     prev_dir.join("ol-stdlib").join("sources").display()
-        // );
-        // println!(
-        //     "cargo:rerun-if-changed={}",
-        //     prev_dir.join("ol-stdlib").join("Move.toml").display()
-        // );
         println!(
             "cargo:rerun-if-changed={}",
-            prev_dir.join("move-stdlib").join("sources").display()
+            prev_dir.join("std").join("sources").display()
         );
         println!(
             "cargo:rerun-if-changed={}",
-            prev_dir.join("move-stdlib").join("Move.toml").display()
+            prev_dir.join("std").join("Move.toml").display()
+        );
+        println!(
+            "cargo:rerun-if-changed={}",
+            prev_dir.join("open-libra").join("sources").display()
+        );
+        println!(
+            "cargo:rerun-if-changed={}",
+            prev_dir.join("open-libra").join("Move.toml").display()
         );
         ReleaseTarget::Head
             .create_release(

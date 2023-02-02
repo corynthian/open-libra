@@ -58,11 +58,10 @@ impl ReleaseTarget {
     pub fn packages(self) -> Vec<(&'static str, Option<&'static str>)> {
         let result = vec![
             ("std", None),
-            //("ol-stdlib", None),
-            // (
-            //     "ol-framework",
-            //     Some("cached-packages/src/ol_framework_transaction_builder.rs"),
-            // ),
+            (
+                "open-libra",
+                Some("cached-packages/src/open_libra_transaction_builder.rs"),
+            ),
         ];
         // Currently we don't have experimental packages only included in particular targets.
         result

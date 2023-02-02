@@ -4,6 +4,9 @@
 use ol_framework::ReleaseBundle;
 use once_cell::sync::Lazy;
 
+pub mod open_libra_transaction_builder;
+pub mod open_libra;
+
 #[cfg(unix)]
 const HEAD_RELEASE_BUNDLE_BYTES: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/head.mrb"));
 #[cfg(windows)]
