@@ -205,15 +205,15 @@ impl ReleasePackage {
         emitln!(writer, "script {");
         writer.indent();
         emitln!(writer, "use std::vector;");
-        emitln!(writer, "use ol_framework::ol_governance;");
-        emitln!(writer, "use ol_framework::code;\n");
+        emitln!(writer, "use open_libra::governance;");
+        emitln!(writer, "use open_libra::code;\n");
 
         if is_testnet && !is_multi_step {
             emitln!(writer, "fun main(core_resources: &signer){");
             writer.indent();
             emitln!(
                 writer,
-                "let framework_signer = ol_governance::get_signer_testnet_only(core_resources, @{});",
+                "let framework_signer = governance::get_signer_testnet_only(core_resources, @{});",
                 for_address
             );
         } else if !is_multi_step {
@@ -221,7 +221,7 @@ impl ReleasePackage {
             writer.indent();
             emitln!(
                 writer,
-                "let framework_signer = ol_governance::resolve(proposal_id, @{});",
+                "let framework_signer = governance::resolve(proposal_id, @{});",
                 for_address
             );
         } else {
@@ -297,14 +297,14 @@ impl ReleasePackage {
         if next_execution_hash == "vector::empty<u8>()".as_bytes() {
             emitln!(
                 writer,
-                "let framework_signer = ol_governance::resolve_multi_step_proposal(proposal_id, @{}, {});\n",
+                "let framework_signer = governance::resolve_multi_step_proposal(proposal_id, @{}, {});\n",
                 for_address,
                 "vector::empty<u8>()",
             );
         } else {
             emitln!(
                 writer,
-                "let framework_signer = ol_governance::resolve_multi_step_proposal("
+                "let framework_signer = governance::resolve_multi_step_proposal("
             );
             writer.indent();
             emitln!(writer, "proposal_id,");
